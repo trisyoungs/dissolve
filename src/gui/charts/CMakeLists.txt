@@ -2,11 +2,11 @@
 
 # Meta-Objects
 set(charts_MOC_HDRS moduleblock.h moduleinsertionblock.h procedurenode.h chart.hui chartscrollarea.hui)
-qt5_wrap_cpp(charts_MOC_SRCS ${charts_MOC_HDRS})
+qt6_wrap_cpp(charts_MOC_SRCS ${charts_MOC_HDRS})
 
 # User Interface Files
 set(charts_UIS moduleblock.ui moduleinsertionblock.ui procedurenode.ui)
-qt5_wrap_ui(charts_UIS_H ${charts_UIS})
+qt6_wrap_ui(charts_UIS_H ${charts_UIS})
 
 # Source files (not Qt UI files or custom .h [uih])
 set(charts_SRCS
@@ -29,5 +29,5 @@ set(charts_SRCS
 
 # Target 'charts'
 add_library(charts ${charts_UIS_H} ${charts_SRCS} ${charts_MOC_SRCS})
-target_include_directories(charts PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt5Widgets_INCLUDE_DIRS})
+target_include_directories(charts PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt6Widgets_INCLUDE_DIRS})
 target_link_libraries(charts PRIVATE base)

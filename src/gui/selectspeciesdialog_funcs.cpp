@@ -5,7 +5,6 @@
 #include "gui/selectspeciesdialog.h"
 #include "gui/selectspecieswidget.h"
 #include "templates/variantpointer.h"
-#include <QRegExp>
 
 SelectSpeciesDialog::SelectSpeciesDialog(QWidget *parent, const CoreData &coreData, QString dialogTitle)
 {

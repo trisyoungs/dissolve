@@ -39,7 +39,6 @@ ModuleBlock::ModuleBlock(QWidget *parent, Module *module, Dissolve &dissolve)
         auto *cfgWidget = new ConfigurationVectorKeywordWidget(nullptr, cfgKeyword, dissolve.coreData());
         connect(cfgWidget, SIGNAL(keywordValueChanged(int)), this, SLOT(configurationKeywordEdited(int)));
         auto *layout = new QHBoxLayout;
-        layout->setMargin(0);
         layout->addWidget(cfgWidget);
         ui_.ConfigurationsPlaceholderWidget->setLayout(layout);
         if (module_->nRequiredTargets() == Module::ZeroTargets)
@@ -169,7 +168,7 @@ void ModuleBlock::paintEvent(QPaintEvent *event)
     borderPath.lineTo(metrics.blockBorderMidPoint(), height() - metrics.blockBorderMidPoint());
     borderPath.closeSubpath();
 
-    painter.setBrush(QGuiApplication::palette().background());
+    painter.setBrush(QGuiApplication::palette().base());
 
     // Ready - draw the border + fill!
     painter.drawPath(borderPath);

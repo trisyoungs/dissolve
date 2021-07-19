@@ -18,7 +18,6 @@ ElementSelector::ElementSelector(QWidget *parent) : QWidget(parent)
     // Create grid layout for widget
     auto *gl = new QGridLayout;
     gl->setSpacing(4);
-    gl->setMargin(0);
 
     // Create periodic table buttons
     QLabel *label;

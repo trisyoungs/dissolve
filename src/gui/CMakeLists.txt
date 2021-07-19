@@ -43,7 +43,7 @@ set(components_MOC_HDRS
     selectgenericitemdialog.h
     selectspeciesdialog.h
 )
-qt5_wrap_cpp(components_MOC_SRCS ${components_MOC_HDRS})
+qt6_wrap_cpp(components_MOC_SRCS ${components_MOC_HDRS})
 
 # User Interface Files
 set(components_UIS
@@ -80,7 +80,7 @@ set(components_UIS
     selectgenericitemdialog.ui
     selectspeciesdialog.ui
 )
-qt5_wrap_ui(components_UIS_H ${components_UIS})
+qt6_wrap_ui(components_UIS_H ${components_UIS})
 
 # Source files (not Qt UI files or custom .h [uih])
 set(components_SRCS
@@ -147,8 +147,8 @@ set(components_SRCS
 # Target 'components'
 add_library(components ${components_UIS_H} ${components_SRCS} ${components_MOC_SRCS})
 target_include_directories(
-  components PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt5Widgets_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS}
-                     ${CONAN_INCLUDE_DIRS_PUGIXML}
+  components PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt6Widgets_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS}
+                     ${Qt6OpenGLWidgets_INCLUDE_DIRS} ${CONAN_INCLUDE_DIRS_PUGIXML}
 )
 
 target_link_libraries(components widgets base)
@@ -180,7 +180,7 @@ set(gui_MOC_HDRS
     maintabsbar.hui
     maintabswidget.hui
 )
-qt5_wrap_cpp(gui_MOC_SRCS ${gui_MOC_HDRS})
+qt6_wrap_cpp(gui_MOC_SRCS ${gui_MOC_HDRS})
 
 # User Interface Files
 set(gui_UIS
@@ -197,7 +197,7 @@ set(gui_UIS
     # Main UI
     gui.ui
 )
-qt5_wrap_ui(gui_UIS_H ${gui_UIS})
+qt6_wrap_ui(gui_UIS_H ${gui_UIS})
 
 # Source files (not Qt UI files or custom .h [uih])
 set(gui_SRCS
@@ -238,12 +238,13 @@ set(gui_SRCS
 
 # Resources
 set(gui_RES_QRC main.qrc)
-qt5_add_resources(gui_RES ${gui_RES_QRC})
+qt6_add_resources(gui_RES ${gui_RES_QRC})
 
 # Target 'gui'
 add_library(gui ${gui_RES} ${gui_UIS_H} ${gui_SRCS} ${gui_MOC_SRCS})
 target_include_directories(
-  gui PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt5Widgets_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS}
+  gui PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt6Widgets_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} Qt6::OpenGL
+              Qt6::OpenGLWidgets
 )
 target_link_libraries(
   gui
@@ -254,6 +255,8 @@ target_link_libraries(
   components
   models
   base
+  Qt6::OpenGL
+  Qt6::OpenGLWidgets
 )
 
 # Subdirectories

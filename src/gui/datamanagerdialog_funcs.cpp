@@ -8,7 +8,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QRegExp>
+#include <QRegularExpression>
 
 DataManagerDialog::DataManagerDialog(QWidget *parent, Dissolve &dissolve, std::vector<ReferencePoint> &referencePoints,
                                      GenericList &items)
@@ -34,7 +34,8 @@ DataManagerDialog::~DataManagerDialog() {}
 // Update the specified table of GenericItems, optionally filtering them by name and description
 void DataManagerDialog::filterTable(QString filterText)
 {
-    simProxy_.setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::Wildcard));
+    simProxy_.setFilterRegularExpression(
+        QRegularExpression(filterText.replace("*", ".*"), QRegularExpression::CaseInsensitiveOption));
     simProxy_.setFilterKeyColumn(0);
 }
 

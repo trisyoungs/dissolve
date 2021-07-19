@@ -35,7 +35,7 @@ set(keywordwidgets_MOC_HDRS
     stdstring.hui
     widget.hui
 )
-qt5_wrap_cpp(keywordwidgets_MOC_SRCS ${keywordwidgets_MOC_HDRS})
+qt6_wrap_cpp(keywordwidgets_MOC_SRCS ${keywordwidgets_MOC_HDRS})
 
 # User Interface Files
 set(keywordwidgets_UIS
@@ -63,7 +63,7 @@ set(keywordwidgets_UIS
     vec3integer.ui
     vec3nodevalue.ui
 )
-qt5_wrap_ui(keywordwidgets_UIS_H ${keywordwidgets_UIS})
+qt6_wrap_ui(keywordwidgets_UIS_H ${keywordwidgets_UIS})
 
 # Source files (not Qt UI files or custom .h [uih])
 set(keywordwidgets_SRCS
@@ -105,5 +105,5 @@ set(keywordwidgets_SRCS
 
 # Target 'keywordwidgets'
 add_library(keywordwidgets ${keywordwidgets_UIS_H} ${keywordwidgets_SRCS} ${keywordwidgets_MOC_SRCS})
-target_include_directories(keywordwidgets PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt5Widgets_INCLUDE_DIRS})
+target_include_directories(keywordwidgets PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt6Widgets_INCLUDE_DIRS})
 target_link_libraries(keywordwidgets PRIVATE base)

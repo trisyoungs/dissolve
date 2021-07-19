@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (c) 2021 Team Dissolve and contributors
 
-#include "gui/render/textprimitive.h"
+// This include must come before the others
 #include "TextPrimitiveLexer.h"
+
 #include "base/sysfunc.h"
 #include "gui/render/TextPrimitiveErrorListeners.h"
 #include "gui/render/TextPrimitiveVisitor.h"
 #include "gui/render/fontinstance.h"
 #include "gui/render/symbol.h"
+#include "gui/render/textprimitive.h"
 #include <QtGui/qopengl.h>
 
 // Return enum options for TextAnchor

@@ -2,9 +2,9 @@
 
 # Meta-Objects
 set(delegates_MOC_HDRS combolist.hui exponentialspin.hui integerspin.hui intraformcombo.hui isotopecombo.hui)
-qt5_wrap_cpp(delegates_MOC_SRCS ${delegates_MOC_HDRS})
+qt6_wrap_cpp(delegates_MOC_SRCS ${delegates_MOC_HDRS})
 
-# User Interface Files SET(delegates_UIS ) QT5_WRAP_UI(delegates_UIS_H ${delegates_UIS})
+# User Interface Files SET(delegates_UIS ) QT6_WRAP_UI(delegates_UIS_H ${delegates_UIS})
 
 # Source files (not Qt UI files or custom .h [uih])
 set(delegates_SRCS
@@ -23,5 +23,5 @@ add_library(
   # ${delegates_UIS_H}
   ${delegates_SRCS} ${delegates_MOC_SRCS}
 )
-target_include_directories(delegates PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt5Widgets_INCLUDE_DIRS})
+target_include_directories(delegates PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${Qt6Widgets_INCLUDE_DIRS})
 target_link_libraries(delegates PRIVATE base)

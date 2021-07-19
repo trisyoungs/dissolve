@@ -2,7 +2,7 @@ parameters:
   - name: extraflags
     default: ''
   - name: qtver
-    default: 5.15.1
+    default: 6.1.1
   - name: ftrepo
     default: git://git.sv.nongnu.org/freetype/freetype2.git
   - name: ftglrepo
@@ -19,7 +19,7 @@ steps:
     displayName: 'Install Prerequisites'
   - script: |
       python -m pip install aqtinstall
-      python -m aqt install --outputdir $(Build.BinariesDirectory)\\Qt ${{ parameters.qtver }} windows desktop win64_msvc2019_64 -m qtcore qtgui qtwidgets qtprintsupport
+      python -m aqt install --outputdir $(Build.BinariesDirectory)\\Qt ${{ parameters.qtver }} windows desktop win64_msvc2019_64
     displayName: 'Install Qt'
   - powershell: |
       $ErrorActionPreference = 'Stop'

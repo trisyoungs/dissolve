@@ -26,7 +26,7 @@ macro(dissolve_add_module header modulename)
     )
     target_link_libraries(
       module_${modulename}_nogui
-      PRIVATE base
+      PRIVATE base Qt6::OpenGL Qt6::OpenGLWidgets
       PUBLIC ${THREADING_LINK_LIBS}
     )
   endif()
@@ -76,8 +76,8 @@ macro(dissolve_add_module_gui modulename)
   message(STATUS "...       ${MODULEGUI_SRC}")
 
   # Call Qt wrappers
-  qt5_wrap_cpp(MODULEGUI_MOC_SRCS ${MODULEGUI_MOC_HDRS})
-  qt5_wrap_ui(MODULEGUI_UIS_H ${MODULEGUI_UIS})
+  qt6_wrap_cpp(MODULEGUI_MOC_SRCS ${MODULEGUI_MOC_HDRS})
+  qt6_wrap_ui(MODULEGUI_UIS_H ${MODULEGUI_UIS})
 
   # Add library target
   add_library(module_${modulename}_gui ${MODULEGUI_MOC_SRCS} ${MODULEGUI_UIS_H} ${MODULEGUI_SRC})
@@ -95,9 +95,11 @@ macro(dissolve_add_module_gui modulename)
     PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src
-    ${Qt5Core_INCLUDE_DIRS}
-    ${Qt5Gui_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt6Core_INCLUDE_DIRS}
+    ${Qt6Gui_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
+    ${Qt6OpenGL_INCLUDE_DIRS}
+    ${Qt6OpenGLWidgets_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIRS}
   )
   target_link_libraries(

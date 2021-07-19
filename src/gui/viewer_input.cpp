@@ -14,14 +14,14 @@ void BaseViewer::mousePressEvent(QMouseEvent *event)
 {
     // Store the current button state and mouse position (with inverted y coordinate)
     buttonState_ = event->buttons();
-    rMouseDown_.set(event->x(), contextHeight_ - event->y(), 0.0);
+    rMouseDown_.set(event->pos().x(), contextHeight_ - event->pos().y(), 0.0);
     rMouseLast_ = rMouseDown_;
     mouseDownModifiers_ = event->modifiers();
     mouseReleaseTimer_.start();
 
     // If a 2D view, store the clicked local coordinate
     if (view().isFlatView())
-        clicked2DAxesCoordinates_ = screenTo2DAxes(event->x(), contextHeight_ - event->y());
+        clicked2DAxesCoordinates_ = screenTo2DAxes(event->pos().x(), contextHeight_ - event->pos().y());
 
     interacting_ = true;
 
@@ -47,18 +47,18 @@ void BaseViewer::mouseReleaseEvent(QMouseEvent *event)
     postRedisplay();
 
     // Clear button state and interaction flag
-    buttonState_ = 0;
+    buttonState_ = Qt::NoButton;
     interacting_ = false;
 }
 
 // Mouse move event
 void BaseViewer::mouseMoveEvent(QMouseEvent *event)
 {
-    const auto dx = event->x() - rMouseLast_.x;
-    const auto dy = (contextHeight_ - event->y()) - rMouseLast_.y;
+    const auto dx = event->pos().x() - rMouseLast_.x;
+    const auto dy = (contextHeight_ - event->pos().y()) - rMouseLast_.y;
 
     // Store the new mouse coordinate with inverted y coordinate
-    rMouseLast_.set(event->x(), contextHeight_ - event->y(), 0.0);
+    rMouseLast_.set(event->pos().x(), contextHeight_ - event->pos().y(), 0.0);
 
     // If a 2D view, store the current local Axes coordinate
     if (view().isFlatView())
@@ -74,7 +74,7 @@ void BaseViewer::mouseMoveEvent(QMouseEvent *event)
 void BaseViewer::wheelEvent(QWheelEvent *event)
 {
     // Handle the event
-    mouseWheeled(event->delta());
+    mouseWheeled(event->pixelDelta().y());
 
     postRedisplay();
 }

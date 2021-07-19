@@ -5,7 +5,6 @@
 #include "gui/selectforcefielddialog.h"
 #include "gui/selectforcefieldwidget.h"
 #include "templates/variantpointer.h"
-#include <QRegExp>
 
 SelectForcefieldDialog::SelectForcefieldDialog(QWidget *parent, const List<Forcefield> &forcefields) { ui_.setupUi(this); }
 

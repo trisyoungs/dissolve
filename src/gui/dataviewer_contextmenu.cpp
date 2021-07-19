@@ -22,7 +22,6 @@
 void DataViewer::showGeneralContextMenu(QPoint pos)
 {
     QMenu menu;
-    menu.setFont(font());
 
     // Reset View
     QAction *resetViewAction = menu.addAction("&Reset View");
@@ -46,7 +45,6 @@ void DataViewer::showRenderableContextMenu(QPoint pos, std::shared_ptr<Renderabl
     QMenu menu;
     QAction *action;
     RefDataList<QAction, Gizmo *> copyToActions;
-    menu.setFont(font());
     QFont italicFont(menu.font());
     italicFont.setItalic(true);
 

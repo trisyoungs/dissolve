@@ -4,7 +4,7 @@
 #include "data/ff/ff.h"
 #include "gui/selectforcefieldwidget.h"
 #include "templates/variantpointer.h"
-#include <QRegExp>
+#include <QRegularExpression>
 
 SelectForcefieldWidget::SelectForcefieldWidget(QWidget *parent, const std::vector<std::shared_ptr<Forcefield>> &forcefields)
     : QWidget(parent), forcefields_(forcefields)
@@ -48,11 +48,13 @@ void SelectForcefieldWidget::updateForcefieldsList(std::shared_ptr<Forcefield> c
         {
             // Check name
             QString name = QString::fromStdString(std::string(ff->name()));
-            auto inName = name.contains(QRegExp(filter, Qt::CaseInsensitive, QRegExp::Wildcard));
+            auto inName =
+                name.contains(QRegularExpression(filter.replace("*", ".*"), QRegularExpression::CaseInsensitiveOption));
 
             // Check description
             QString description = QString::fromStdString(std::string(ff->description()));
-            auto inDescription = description.contains(QRegExp(filter, Qt::CaseInsensitive, QRegExp::Wildcard));
+            auto inDescription =
+                description.contains(QRegularExpression(filter.replace("*", ".*"), QRegularExpression::CaseInsensitiveOption));
 
             // Hide the item?
             auto hide = (!inName) && (!inDescription);

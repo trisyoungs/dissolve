@@ -3,7 +3,6 @@
 
 #include "gui/selectelementdialog.h"
 #include "templates/variantpointer.h"
-#include <QRegExp>
 
 SelectElementDialog::SelectElementDialog(QWidget *parent) { ui_.setupUi(this); }
 

@@ -5,7 +5,6 @@
 #include "gui/selectconfigurationdialog.h"
 #include "gui/selectconfigurationwidget.h"
 #include "templates/variantpointer.h"
-#include <QRegExp>
 
 SelectConfigurationDialog::SelectConfigurationDialog(QWidget *parent, const CoreData &coreData, QString dialogTitle)
 {

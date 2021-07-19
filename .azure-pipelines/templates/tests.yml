@@ -5,10 +5,8 @@ parameters:
     default: true
   - name: serial
     default: true
-  - name: ppa
-    default: 'beineri/opt-qt-5.15.2-focal'
   - name: qtver
-    default: 515
+    default: 6.1.1
 
 jobs:
   - job:
@@ -21,8 +19,9 @@ jobs:
         fetchDepth: 1
       - bash: |
           set -ex
-          sudo add-apt-repository ppa:${{ parameters.ppa }} -y
-          sudo apt-get install qt${{ parameters.qtver }}base
+          sudo pip3 install aqtinstall
+          sudo apt-get install libgl1-mesa-glx libopengl0 libegl1 libegl1-mesa
+          aqt install --outputdir /tmp/qt ${{ parameters.qtver }} linux desktop -m qtcore qtgui qtwidgets qtopengl qtopenglwidgets
       - task: DownloadBuildArtifacts@0
         inputs:
           buildType: 'current'
@@ -32,6 +31,7 @@ jobs:
         displayName: 'Download Threaded Test Artifacts'
       - bash: |
           set -ex
+          export LD_LIBRARY_PATH=/tmp/qt/${{ parameters.qtver }}/gcc_64/lib:$LD_LIBRARY_PATH
           mkdir build && cd build
           mv $(System.ArtifactsDirectory)/linux-tests/* ./
           chmod +x bin/*

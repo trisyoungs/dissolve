@@ -17,7 +17,7 @@ void GUIOutputHandler::styleForWarning() { emit(setColour(Qt::blue)); }
 void GUIOutputHandler::styleForError() { emit(setColour(Qt::red)); }
 
 // Reset styling for normal text
-void GUIOutputHandler::resetStyling() { emit(setColour(QGuiApplication::palette().foreground().color())); }
+void GUIOutputHandler::resetStyling() { emit(setColour(QGuiApplication::palette().text().color())); }
 
 /*
  * Output

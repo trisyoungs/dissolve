@@ -98,7 +98,7 @@ target_include_directories(
   render
   PRIVATE ${PROJECT_SOURCE_DIR}/src
           ${PROJECT_BINARY_DIR}/src
-          ${Qt5Widgets_INCLUDE_DIRS}
+          ${Qt6Widgets_INCLUDE_DIRS}
           ${FREETYPE_INCLUDE_DIRS}
           ${ANTLRRUNTIME_INCLUDE_DIRS}
           ${ANTLR_TextPrimitiveGrammarLexer_OUTPUT_DIR}

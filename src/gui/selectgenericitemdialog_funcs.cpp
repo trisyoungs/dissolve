@@ -3,7 +3,7 @@
 
 #include "gui/selectgenericitemdialog.h"
 #include "main/dissolve.h"
-#include <QRegExp>
+#include <QRegularExpression>
 
 SelectGenericItemDialog::SelectGenericItemDialog(QWidget *parent, Dissolve &dissolve) : dissolve_(dissolve)
 {
@@ -28,7 +28,8 @@ void SelectGenericItemDialog::filterItems(QString filterText)
         if (filterText.isEmpty())
             item->setHidden(false);
         else
-            item->setHidden(!item->text().contains(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::Wildcard)));
+            item->setHidden(!item->text().contains(
+                QRegularExpression(filterText.replace("*", ".*"), QRegularExpression::CaseInsensitiveOption)));
     }
 }
 

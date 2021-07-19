@@ -91,12 +91,16 @@ if(GUI)
   # Add extra functions
   include(FindFTGL)
 
-  find_package(Qt5Widgets 5.10 REQUIRED)
-  find_package(Qt5Core 5.10 REQUIRED)
-  find_package(Qt5Gui 5.10 REQUIRED)
+  if(APPLE)
+    set(CMAKE_PREFIX_PATH "${QT_BASE_DIR}")
+  endif(APPLE)
+
   find_package(OpenGL REQUIRED)
+  find_package(Qt6 COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets REQUIRED)
   find_package(FTGL REQUIRED)
   find_package(Freetype REQUIRED)
+  find_package(Qt6OpenGL 6.0 REQUIRED)
+  find_package(Qt6OpenGLWidgets 6.0 REQUIRED)
 
   # Make sure CMake won't try to generate rules for moc (we will do it ourselves)
   set(CMAKE_AUTOMOC OFF)
@@ -231,10 +235,12 @@ if(GUI)
     PRIVATE ${PROJECT_SOURCE_DIR}/src
             ${PROJECT_BINARY_DIR}/src
             ${FREETYPE_INCLUDE_DIRS}
-            ${Qt5Core_INCLUDE_DIRS}
-            ${Qt5Gui_INCLUDE_DIRS}
-            ${Qt5OpenGL_INCLUDE_DIRS}
-            ${Qt5Widgets_INCLUDE_DIRS}
+            ${Qt6Core_INCLUDE_DIRS}
+            ${Qt6Gui_INCLUDE_DIRS}
+            ${Qt6OpenGL_INCLUDE_DIRS}
+            ${Qt6Widgets_INCLUDE_DIRS}
+            ${Qt6OpenGL_INCLUDE_DIRS}
+            ${Qt6OpenGLWidgets_INCLUDE_DIRS}
   )
 
 endif(GUI)
@@ -333,10 +339,10 @@ if(GUI)
            ${NO_WHOLE_ARCHIVE_FLAG}
     PRIVATE # External libs
             antlr4-runtime
-            Qt5::Widgets
-            Qt5::Core
+            Qt6::Widgets
+            Qt6::Core
+            OpenGL::GL
             ${FTGL_LIBRARIES}
-            ${OPENGL_LIBRARIES}
             ${FREETYPE_LIBRARIES}
             ${EXTRA_LINK_LIBS}
             ${THREADING_LINK_LIBS}

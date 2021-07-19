@@ -110,7 +110,7 @@ void ProcedureChartNodeBlock::paintEvent(QPaintEvent *event)
     borderPath.closeSubpath();
 
     // Ready - draw the border + fill!
-    painter.setBrush(QGuiApplication::palette().background());
+    painter.setBrush(QGuiApplication::palette().base());
     painter.drawPath(borderPath);
 
     // Draw the drag handle, updating its height first

@@ -64,8 +64,8 @@ QString ExponentialSpin::textFromValue(double value) const
 QValidator::State ExponentialSpin::validate(QString &text, int &pos) const
 {
     // Set validator
-    static QRegExp regExp("[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?");
-    return (regExp.exactMatch(text) ? QValidator::Acceptable : QValidator::Invalid);
+    static QRegularExpression regExp("[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?");
+    return (regExp.match(text).hasMatch() ? QValidator::Acceptable : QValidator::Invalid);
 }
 
 // Interpret text into value

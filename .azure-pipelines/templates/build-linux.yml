@@ -1,10 +1,8 @@
 parameters:
   - name: extraflags
     default: ''
-  - name: ppa
-    default: 'beineri/opt-qt-5.15.2-focal'
   - name: qtver
-    default: 515
+    default: 6.1.1
   - name: gui
     default: true
   - name: threading
@@ -16,18 +14,19 @@ steps:
       # -- General
       sudo apt-get update -q
       sudo apt-get install antlr4 libfreetype6-dev libftgl-dev ninja-build python3-setuptools uuid uuid-dev
-      # -- Qt
-      sudo add-apt-repository ppa:${{ parameters.ppa }} -y
-      sudo apt-get install qt${{ parameters.qtver }}base qt${{ parameters.qtver }}svg qt${{ parameters.qtver }}imageformats -y
     displayName: 'Install Prerequisites'
   - bash: |
       set -ex
       sudo pip3 install wheel
       sudo pip3 install conan
+      # -- Qt
+      sudo pip3 install aqtinstall
+      aqt install --outputdir /tmp/qt ${{ parameters.qtver }} linux desktop -m qtcore qtgui qtwidgets qtopengl qtopenglwidgets
     displayName: 'Install Conan'
   - bash: |
       set -ex
-      QT_BASE_DIR="/opt/qt${{ parameters.qtver }}"
+      Qt6_DIR=/tmp/qt/${{parameters.qtver}}/gcc_64/lib/cmake/Qt6
+      QT_BASE_DIR=/tmp/qt/${{parameters.qtver}}/gcc_64
       export QTDIR=$QT_BASE_DIR
       export PATH=$QT_BASE_DIR/bin:$PATH
       export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH

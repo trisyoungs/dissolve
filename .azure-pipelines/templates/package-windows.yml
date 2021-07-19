@@ -1,6 +1,6 @@
 parameters:
   - name: qtver
-    default: 5.15.1
+    default: 6.1.1
 
 steps:
   - script: |
@@ -9,10 +9,10 @@ steps:
   - powershell: |
       $ErrorActionPreference = 'Stop'
       # Set paths
-      $env:Qt5_DIR = "$(Build.BinariesDirectory)\Qt\${{ parameters.qtver }}\msvc2019_64"
-      $env:PATH += ";$env:Qt5_DIR" + "\bin"
-      echo $env:Qt5_DIR
-      $env:MINGW_DIR = $env:Qt5_DIR
+      $env:Qt6_DIR = "$(Build.BinariesDirectory)\Qt\${{ parameters.qtver }}\msvc2019_64"
+      $env:PATH += ";$env:Qt6_DIR" + "\bin"
+      echo $env:Qt6_DIR
+      $env:MINGW_DIR = $env:Qt6_DIR
       $env:FREETYPE_DIR = "$(Build.BinariesDirectory)\freetype-install\bin"
       $env:FTGL_DIR = "$(Build.BinariesDirectory)\ftgl-install\bin"
       $env:ANTLR_DIR = $(Get-Location).path + "\build\antlr4runtime\src\antlr_runtime\dist\Release"
