@@ -222,7 +222,6 @@ set(gui_SRCS
     gui_funcs.cpp
     gui_io.cpp
     gui_simulation.cpp
-    gui_start.cpp
     menu_configuration.cpp
     menu_file.cpp
     menu_help.cpp

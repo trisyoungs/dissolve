@@ -27,7 +27,7 @@ void DissolveWindow::setupIteration(int count)
     dissolveState_ = DissolveWindow::RunningState;
 
     // Update the controls
-    updateControlsFrame();
+    updateStatusBar();
 
     emit iterate(count);
 }
@@ -51,14 +51,8 @@ void DissolveWindow::on_SimulationStepFiveAction_triggered(bool checked) { setup
 
 void DissolveWindow::on_SimulationPauseAction_triggered(bool checked)
 {
-    // Set run icon button to the 'pausing' icon (it will be set back to normal by setWidgetsAfterRun())
-    ui_.ControlRunButton->setIcon(QIcon(":/control/icons/control_waiting.svg"));
-
-    // Send the signal to stop
     emit(stopIterating());
 
-    // Disable the pause button
-    ui_.ControlPauseButton->setEnabled(false);
     Renderable::setSourceDataAccessEnabled(true);
 }
 

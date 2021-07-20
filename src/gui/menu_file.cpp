@@ -61,9 +61,6 @@ void DissolveWindow::startNew()
 
     // Fully update GUI
     fullUpdate();
-
-    // Make sure we are now on the Simulation stack page
-    showMainStackPage(DissolveWindow::SimulationStackPage);
 }
 
 void DissolveWindow::on_FileNewAction_triggered(bool checked)
@@ -103,8 +100,14 @@ void DissolveWindow::on_FileCloseAction_triggered(bool checked)
     if (!checkSaveCurrentInput())
         return;
 
-    // Make sure we are now on the Start stack page
-    showMainStackPage(DissolveWindow::StartStackPage);
+    // Clear any data-related tabs from the UI
+    ui_.MainTabs->clearTabs();
+
+    // Clear and fully update GUI
+    dissolve_.clear();
+    dissolveState_ = DissolveWindow::NoState;
+    modified_ = false;
+    fullUpdate();
 }
 
 void DissolveWindow::on_FileSaveAction_triggered(bool checked)
@@ -130,7 +133,7 @@ void DissolveWindow::on_FileSaveAction_triggered(bool checked)
 
     modified_ = false;
 
-    updateControlsFrame();
+    updateStatusBar();
 
     updateWindowTitle();
 }
@@ -155,7 +158,7 @@ void DissolveWindow::on_FileSaveAsAction_triggered(bool checked)
     QFileInfo inputFileInfo(newFile);
     QDir::setCurrent(inputFileInfo.absoluteDir().absolutePath());
 
-    updateControlsFrame();
+    updateStatusBar();
 
     updateWindowTitle();
 }

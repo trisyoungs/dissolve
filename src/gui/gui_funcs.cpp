@@ -48,7 +48,7 @@ DissolveWindow::DissolveWindow(Dissolve &dissolve)
     refreshing_ = false;
     modified_ = false;
     localSimulation_ = true;
-    dissolveState_ = EditingState;
+    dissolveState_ = NoState;
 
     // Create statusbar widgets
     localSimulationIndicator_ = new QLabel;
@@ -63,7 +63,10 @@ DissolveWindow::DissolveWindow(Dissolve &dissolve)
     heartbeatFileIndicator_->setPixmap(QPixmap(":/general/icons/general_heartbeat.svg"));
     heartbeatFileIndicator_->setMaximumSize(QSize(20, 20));
     heartbeatFileIndicator_->setScaledContents(true);
+    iterationLabel_ = new QLabel("00000");
     etaLabel_ = new QLabel("ETA: --:--:--");
+
+    statusBar()->addPermanentWidget(iterationLabel_);
     statusBar()->addPermanentWidget(etaLabel_);
     statusBar()->addPermanentWidget(heartbeatFileIndicator_);
     statusBar()->addPermanentWidget(restartFileIndicator_);
@@ -74,10 +77,8 @@ DissolveWindow::DissolveWindow(Dissolve &dissolve)
     ui_.MainTabs->updateAllTabs();
 
     updateWindowTitle();
-    updateControlsFrame();
-
-    // Show the Start stack page (we call this mostly to ensure correct availability of other controls)
-    showMainStackPage(DissolveWindow::StartStackPage);
+    updateStatusBar();
+    updateMenus();
 }
 
 // Catch window close event
@@ -223,9 +224,6 @@ bool DissolveWindow::openLocalFile(std::string_view inputFile, std::string_view 
     // Fully update GUI
     fullUpdate();
 
-    // Make sure we are now on the Simulation stack page
-    showMainStackPage(DissolveWindow::SimulationStackPage);
-
     return true;
 }
 
@@ -248,17 +246,11 @@ void DissolveWindow::updateWindowTitle()
     ui_.FileSaveAction->setEnabled(modified_);
 }
 
-// Update controls frame
-void DissolveWindow::updateControlsFrame()
+// Update status bar
+void DissolveWindow::updateStatusBar()
 {
-    // Update ControlFrame to reflect Dissolve's current state
-    ui_.ControlRunButton->setEnabled(dissolveState_ == DissolveWindow::EditingState);
-    ui_.ControlStepButton->setEnabled(dissolveState_ == DissolveWindow::EditingState);
-    ui_.ControlPauseButton->setEnabled(dissolveState_ == DissolveWindow::RunningState);
-    ui_.ControlReloadButton->setEnabled(dissolveState_ == DissolveWindow::MonitoringState);
-
     // Set current iteration number
-    ui_.ControlIterationLabel->setText(QStringLiteral("%1").arg(dissolve_.iteration(), 6, 10, QLatin1Char('0')));
+    iterationLabel_->setText(QStringLiteral("%1").arg(dissolve_.iteration(), 6, 10, QLatin1Char('0')));
 
     // Set relevant file locations
     if (localSimulation_)
@@ -282,6 +274,13 @@ void DissolveWindow::updateControlsFrame()
 // Update menus
 void DissolveWindow::updateMenus()
 {
+    // Enable / disable main menu items as appropriate
+    ui_.SimulationMenu->setEnabled(dissolveState_ == EditingState);
+    ui_.SpeciesMenu->setEnabled(dissolveState_ == EditingState);
+    ui_.ConfigurationMenu->setEnabled(dissolveState_ == EditingState);
+    ui_.LayerMenu->setEnabled(dissolveState_ == EditingState);
+    ui_.WorkspaceMenu->setEnabled(dissolveState_ == EditingState);
+
     auto activeTab = ui_.MainTabs->currentTab();
     if (!activeTab)
         return;
@@ -311,7 +310,7 @@ void DissolveWindow::fullUpdate()
     ui_.MainTabs->reconcileTabs(this);
     ui_.MainTabs->updateAllTabs();
     updateWindowTitle();
-    updateControlsFrame();
+    updateStatusBar();
     updateMenus();
 
     refreshing_ = false;
@@ -323,7 +322,7 @@ void DissolveWindow::updateWhileRunning(int iterationsRemaining)
     refreshing_ = true;
 
     // Set current iteration number
-    ui_.ControlIterationLabel->setText(QStringLiteral("%1").arg(dissolve_.iteration(), 6, 10, QLatin1Char('0')));
+    iterationLabel_->setText(QStringLiteral("%1").arg(dissolve_.iteration(), 6, 10, QLatin1Char('0')));
 
     // Set ETA text if we can
     if (iterationsRemaining == -1)
@@ -340,21 +339,4 @@ void DissolveWindow::updateWhileRunning(int iterationsRemaining)
     Renderable::setSourceDataAccessEnabled(false);
 
     refreshing_ = false;
-}
-
-/*
- * Stack
- */
-
-// Set currently-visible main stack page
-void DissolveWindow::showMainStackPage(DissolveWindow::MainStackPage page)
-{
-    ui_.MainStack->setCurrentIndex(page);
-
-    // Enable / disable main menu items as appropriate
-    ui_.SimulationMenu->setEnabled(page == DissolveWindow::SimulationStackPage);
-    ui_.SpeciesMenu->setEnabled(page == DissolveWindow::SimulationStackPage);
-    ui_.ConfigurationMenu->setEnabled(page == DissolveWindow::SimulationStackPage);
-    ui_.LayerMenu->setEnabled(page == DissolveWindow::SimulationStackPage);
-    ui_.WorkspaceMenu->setEnabled(page == DissolveWindow::SimulationStackPage);
 }
