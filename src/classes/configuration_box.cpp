@@ -36,14 +36,11 @@ void Configuration::createBox(const Matrix3 axes)
 // Return Box
 const Box *Configuration::box() const { return box_.get(); }
 
-// Scale Box lengths (and associated Cells) by specified factor
-void Configuration::scaleBox(double factor)
+// Scale Box lengths (and associated Cells) by specified factors
+void Configuration::scaleBox(Vec3<double> scaleFactors)
 {
-    // Scale Box
-    box_->scale(factor);
-
-    // Apply factor to Cells
-    cells_.scale(factor);
+    box_->scale(scaleFactors);
+    cells_.scale(scaleFactors);
 }
 
 // Set requested size factor for Box
@@ -85,10 +82,10 @@ void Configuration::applySizeFactor(const PotentialMap &potentialMap)
                              requestedSizeFactor_, appliedSizeFactor_);
 
             // Scale molecule centres of geometry
-            scaleContents(sizeFactorRatio);
+            scaleContents({sizeFactorRatio, sizeFactorRatio, sizeFactorRatio});
 
             // Now scale the Box and its Cells
-            scaleBox(sizeFactorRatio);
+            scaleBox({sizeFactorRatio, sizeFactorRatio, sizeFactorRatio});
 
             // Re-assign all Atoms to Cells
             updateCellContents();

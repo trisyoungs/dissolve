@@ -91,6 +91,6 @@ class CellArray
      * Operations
      */
     public:
-    // Scale Cells sizes by supplied factor
-    void scale(double factor);
+    // Scale Cells by supplied factors along each axis
+    void scale(Vec3<double> scaleFactors);
 };

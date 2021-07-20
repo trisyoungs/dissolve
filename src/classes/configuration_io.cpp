@@ -143,7 +143,7 @@ bool Configuration::read(LineParser &parser, const std::vector<std::unique_ptr<S
     cells_.generate(box_.get(), requestedCellDivisionLength_, pairPotentialRange);
 
     // Scale box and cells according to the applied size factor
-    scaleBox(appliedSizeFactor_);
+    scaleBox({appliedSizeFactor_, appliedSizeFactor_, appliedSizeFactor_});
 
     // Update Cell locations for Atoms
     updateCellContents();

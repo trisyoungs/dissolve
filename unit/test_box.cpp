@@ -1,17 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (c) 2021 Team Dissolve and contributors
 
-#include "classes/atomtype.h"
-#include "classes/energykernel.h"
-#include "classes/species.h"
-#include "main/dissolve.h"
-#include "templates/algorithms.h"
+#include "classes/box.h"
 #include <gtest/gtest.h>
 
 namespace UnitTest
 {
 
-Vec3<double> manualMim(const Box &box, const Vec3<double> r1, const Vec3<double> r2)
+Vec3<double> manualMim(Box &box, const Vec3<double> r1, const Vec3<double> r2)
 {
     auto mim = box.inverseAxes() * (r1 - r2);
     if (mim.x < -0.5)
@@ -29,7 +25,41 @@ Vec3<double> manualMim(const Box &box, const Vec3<double> r1, const Vec3<double>
     return box.axes() * mim + r2;
 }
 
-void testBox(const Box &box)
+void scaleBox(Box &box, double requestedVolume, Vec3<bool> scalableAxes, bool uniform = false)
+{
+    // Get original lengths, angles, and volume for comparison
+    auto lengths = box.axisLengths();
+    auto angles = box.axisAngles();
+    auto volume = box.volume();
+
+    // Scale box to new volume and check it
+    if (box.type() == Box::BoxType::Cubic && !uniform)
+    {
+        EXPECT_ANY_THROW(box.scale(box.scaleFactors(requestedVolume, scalableAxes)));
+        return;
+    }
+    else
+        box.scale(box.scaleFactors(requestedVolume, scalableAxes));
+    EXPECT_NEAR(requestedVolume, box.volume(), 1.0e-8);
+    if (uniform)
+    {
+        EXPECT_NEAR(lengths.x / lengths.y, box.axisLength(0) / box.axisLength(1), 1.0e-8);
+        EXPECT_NEAR(lengths.x / lengths.z, box.axisLength(0) / box.axisLength(2), 1.0e-8);
+        EXPECT_NEAR(lengths.y / lengths.z, box.axisLength(1) / box.axisLength(2), 1.0e-8);
+    }
+
+    // Rescale back to old volume and check parameters
+    box.scale(box.scaleFactors(volume, scalableAxes));
+    EXPECT_NEAR(volume, box.volume(), 1.0e-8);
+    EXPECT_NEAR(lengths.x, box.axisLength(0), 1.0e-8);
+    EXPECT_NEAR(lengths.y, box.axisLength(1), 1.0e-8);
+    EXPECT_NEAR(lengths.z, box.axisLength(2), 1.0e-8);
+    EXPECT_NEAR(angles.x, box.axisAngle(0), 1.0e-8);
+    EXPECT_NEAR(angles.y, box.axisAngle(1), 1.0e-8);
+    EXPECT_NEAR(angles.z, box.axisAngle(2), 1.0e-8);
+}
+
+void testBox(Box &box)
 {
     // Determine central coordinate from full axes matrix
     auto centroid = box.axes() * Vec3<double>(0.5, 0.5, 0.5);
@@ -66,31 +96,59 @@ void testBox(const Box &box)
         EXPECT_NEAR(p.y, 0.5, 1.0e-8);
         EXPECT_NEAR(p.z, 0.5, 1.0e-8);
     }
+
+    // Scaling
+    auto factor = 1.8371286;
+    // -- Uniform scaling
+    scaleBox(box, box.volume() * factor, {true, true, true}, true);
+    // -- Non-uniform, single axes
+    scaleBox(box, box.volume() * factor, {true, false, false});
+    scaleBox(box, box.volume() * factor, {false, true, false});
+    scaleBox(box, box.volume() * factor, {false, false, true});
+    // -- Non-uniform, two axes
+    scaleBox(box, box.volume() * factor, {true, true, false});
+    scaleBox(box, box.volume() * factor, {false, true, true});
+    scaleBox(box, box.volume() * factor, {true, false, true});
 }
 
-TEST(BoxTest, Cubic) { testBox(CubicBox(10.0)); }
+TEST(BoxTest, Cubic)
+{
+    auto box = CubicBox(10.0);
+    testBox(box);
+}
 
 TEST(BoxTest, Orthorhombic)
 {
-    testBox(OrthorhombicBox({10.0, 20.0, 30.0}));
-    testBox(OrthorhombicBox({15.0, 2.0, 88.0}));
+    auto box1 = OrthorhombicBox({10.0, 20.0, 30.0});
+    testBox(box1);
+    auto box2 = OrthorhombicBox({15.0, 2.0, 88.0});
+    testBox(box2);
 }
 
 TEST(BoxTest, Monoclinic)
 {
-    testBox(MonoclinicAlphaBox({30.0, 30.0, 30.0}, 66.0));
-    testBox(MonoclinicAlphaBox({10.0, 20.0, 30.0}, 120.0));
-    testBox(MonoclinicBetaBox({30.0, 30.0, 30.0}, 66.0));
-    testBox(MonoclinicBetaBox({10.0, 20.0, 30.0}, 120.0));
-    testBox(MonoclinicGammaBox({30.0, 30.0, 30.0}, 66.0));
-    testBox(MonoclinicGammaBox({10.0, 20.0, 30.0}, 120.0));
+    auto box1 = MonoclinicAlphaBox({30.0, 30.0, 30.0}, 66.0);
+    testBox(box1);
+    auto box2 = MonoclinicAlphaBox({10.0, 20.0, 30.0}, 120.0);
+    testBox(box2);
+    auto box3 = MonoclinicBetaBox({30.0, 30.0, 30.0}, 66.0);
+    testBox(box3);
+    auto box4 = MonoclinicBetaBox({10.0, 20.0, 30.0}, 120.0);
+    testBox(box4);
+    auto box5 = MonoclinicGammaBox({30.0, 30.0, 30.0}, 66.0);
+    testBox(box5);
+    auto box6 = MonoclinicGammaBox({10.0, 20.0, 30.0}, 120.0);
+    testBox(box6);
 }
 
 TEST(BoxTest, Triclinic)
 {
-    testBox(TriclinicBox({30.0, 30.0, 30.0}, {66.0, 33.0, 77.0}));
-    testBox(TriclinicBox({10.0, 20.0, 30.0}, {85.0, 80.0, 90.0}));
-    testBox(TriclinicBox({27.0, 25.5, 31.2311}, {89.0, 120.0, 70.0}));
+    auto box1 = TriclinicBox({30.0, 30.0, 30.0}, {66.0, 33.0, 77.0});
+    testBox(box1);
+    auto box2 = TriclinicBox({10.0, 20.0, 30.0}, {85.0, 80.0, 90.0});
+    testBox(box2);
+    auto box3 = TriclinicBox({27.0, 25.5, 31.2311}, {89.0, 120.0, 70.0});
+    testBox(box3);
 }
 
 } // namespace UnitTest

@@ -22,6 +22,9 @@ AddProcedureNode::AddProcedureNode(const Species *sp, const NodeValue &populatio
                   new EnumOptionsKeyword<AddProcedureNode::BoxActionStyle>(boxActionStyles() =
                                                                                AddProcedureNode::BoxActionStyle::AddVolume),
                   "BoxAction", "Action to take on the Box geometry / volume on addition of the species");
+    keywords_.add("Control", new BoolKeyword(true), "ScaleA", "Scale box length A when modifying volume");
+    keywords_.add("Control", new BoolKeyword(true), "ScaleB", "Scale box length B when modifying volume");
+    keywords_.add("Control", new BoolKeyword(true), "ScaleC", "Scale box length C when modifying volume");
     keywords_.add("Control",
                   new NodeValueEnumOptionsKeyword<Units::DensityUnits>(this, density, Units::densityUnits() = densityUnits),
                   "Density", "Density at which to add the target species");
@@ -87,6 +90,10 @@ bool AddProcedureNode::prepare(Configuration *cfg, std::string_view prefix, Gene
         Messenger::warn("A region has been specified ({}) but the positioning type is set to '{}'\n", regionNode->name(),
                         AddProcedureNode::positioningTypes().keyword(positioning));
 
+    // Check scalable axes definitions
+    if (!keywords_.asBool("ScaleA") && !keywords_.asBool("ScaleB") && !keywords_.asBool("ScaleC"))
+        return Messenger::error("Must have at least one scalable box axis!\n");
+
     return true;
 }
 
@@ -109,6 +116,7 @@ bool AddProcedureNode::execute(ProcessPool &procPool, Configuration *cfg, std::s
     auto &densityAndUnits = keywords_.retrieve<Venum<NodeValue, Units::DensityUnits>>("Density");
     double density = densityAndUnits.value().asDouble();
     auto boxAction = keywords_.enumeration<AddProcedureNode::BoxActionStyle>("BoxAction");
+    Vec3<bool> scalableAxes(keywords_.asBool("ScaleA"), keywords_.asBool("ScaleB"), keywords_.asBool("ScaleC"));
     if (boxAction == AddProcedureNode::BoxActionStyle::None)
         Messenger::print("[Add] Current box geometry / volume will remain as-is.\n");
     else if (boxAction == AddProcedureNode::BoxActionStyle::AddVolume)
@@ -136,16 +144,16 @@ bool AddProcedureNode::execute(ProcessPool &procPool, Configuration *cfg, std::s
             Messenger::print("[Add] Current box is empty, so new volume will be set to exactly {} cubic Angstroms.\n",
                              requiredVolume);
 
-        auto scaleFactor = pow(requiredVolume / currentVolume, 1.0 / 3.0);
+        auto scaleFactors = cfg->box()->scaleFactors(requiredVolume, scalableAxes);
 
         // Scale existing contents
-        cfg->scaleContents(scaleFactor);
+        cfg->scaleContents(scaleFactors);
 
         // Scale the current Box so there is enough space for our new species
-        cfg->scaleBox(scaleFactor);
+        cfg->scaleBox(scaleFactors);
 
-        Messenger::print("[Add] New box volume is {:e} cubic Angstroms (scale factor was {}).\n", cfg->box()->volume(),
-                         scaleFactor);
+        Messenger::print("[Add] New box volume is {:e} cubic Angstroms - scale factors were ({},{},{}).\n",
+                         cfg->box()->volume(), scaleFactors.x, scaleFactors.y, scaleFactors.z);
     }
     else if (boxAction == AddProcedureNode::BoxActionStyle::ScaleVolume)
     {
@@ -173,16 +181,16 @@ bool AddProcedureNode::execute(ProcessPool &procPool, Configuration *cfg, std::s
         if (cfg->nAtoms() > 0)
             requiredVolume += existingRequiredVolume;
 
-        auto scaleFactor = pow(requiredVolume / cfg->box()->volume(), 1.0 / 3.0);
+        auto scaleFactors = cfg->box()->scaleFactors(requiredVolume, scalableAxes);
 
         // Scale existing contents
-        cfg->scaleContents(scaleFactor);
+        cfg->scaleContents(scaleFactors);
 
         // Scale the current Box so there is enough space for our new species
-        cfg->scaleBox(scaleFactor);
+        cfg->scaleBox(scaleFactors);
 
-        Messenger::print("[Add] Current box scaled by {} - new volume is {:e} cubic Angstroms.\n", scaleFactor,
-                         cfg->box()->volume());
+        Messenger::print("[Add] Current box scaled by ({},{},{}) - new volume is {:e} cubic Angstroms.\n", scaleFactors.x,
+                         scaleFactors.y, scaleFactors.z, cfg->box()->volume());
     }
     else if (boxAction == AddProcedureNode::BoxActionStyle::Set)
     {
