@@ -15,6 +15,10 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+          - bash: |
+              wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/update-release
+              chmod u+x ./update-release
+            displayName: 'Install Prerequisites'
           - task: DownloadBuildArtifacts@0
             inputs:
               buildType: 'current'
@@ -45,7 +49,7 @@ stages:
           - bash: |
               set -ex
               VERSION=`grep "#define DISSOLVEVERSION" src/main/version.cpp | sed "s/.*\"\(.*\)\"/\1/g"`
-              ./ci/scripts/update-release -r disorderedmaterials/dissolve -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/*AppImage $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*dmg examples/*zip examples/*.tar.gz
+              ./update-release -r disorderedmaterials/dissolve -t ${VERSION} -n "${VERSION}" -f ReleaseNotes.md $(System.ArtifactsDirectory)/linux-artifacts/*AppImage $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*dmg examples/*zip examples/*.tar.gz
             condition: eq('${{ parameters.continuous }}', false)
             env:
               GITHUB_TOKEN: $(REPO_SECRET)
@@ -55,7 +59,7 @@ stages:
               SHORTHASH=`git rev-parse --short HEAD`
               DATE=`date`
               VERSION=`grep "#define DISSOLVEVERSION" src/main/version.cpp | sed "s/.*\"\(.*\)\"/\1/g"`
-              ./ci/scripts/update-release -r disorderedmaterials/dissolve -t continuous -n "Continuous Build (${VERSION} @ ${SHORTHASH})" -b "Continuous release from current \`develop\` branch at ${SHORTHASH}. Built ${DATE}." -p -e -u $(System.ArtifactsDirectory)/linux-artifacts/*.AppImage $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*dmg examples/*zip examples/*.tar.gz
+              ./update-release -r disorderedmaterials/dissolve -t continuous -n "Continuous Build (${VERSION} @ ${SHORTHASH})" -b "Continuous release from current \`develop\` branch at ${SHORTHASH}. Built ${DATE}." -p -e -u $(System.ArtifactsDirectory)/linux-artifacts/*.AppImage $(System.ArtifactsDirectory)/windows-artifacts/*.exe $(System.ArtifactsDirectory)/windows-artifacts/*.zip $(System.ArtifactsDirectory)/osx-artifacts/*dmg examples/*zip examples/*.tar.gz
             condition: eq('${{ parameters.continuous }}', true)
             env:
               GITHUB_TOKEN: $(REPO_SECRET)

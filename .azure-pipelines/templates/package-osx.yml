@@ -1,6 +1,8 @@
 steps:
   - bash: |
       pip3 install dmgbuild biplist
+      wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/prep-dmg
+      chmod u+x ./prep-dmg
     displayName: 'Install Prerequisites'
   - bash: |
       set -ex
@@ -10,7 +12,7 @@ steps:
       Qt5_ROOT=${QT_INSTALL_DIR}/${QTVER}
       # Get program version
       DISSOLVE_VERSION=`grep "#define DISSOLVEVERSION" src/main/version.cpp | sed "s/.*\"\(.*\)\"/\1/g"`
-      ci/scripts/prep-dmg -a Dissolve-GUI -v ${DISSOLVE_VERSION} -b build/bin/dissolve-gui.app/Contents/MacOS/dissolve-gui -d ${Qt5_ROOT} -i icon/icon-1024x1024.png -p build/bin/dissolve-gui.app/Contents/Info.plist
+      ./prep-dmg -a Dissolve-GUI -v ${DISSOLVE_VERSION} -b build/bin/dissolve-gui.app/Contents/MacOS/dissolve-gui -d ${Qt5_ROOT} -i icon/icon-1024x1024.png -p build/bin/dissolve-gui.app/Contents/Info.plist
     displayName: 'Prepare DMG Dirs'
   - bash: |
       set -ex

@@ -5,16 +5,21 @@ parameters:
 steps:
   - bash: |
       set -ex
-      ci/scripts/prep-appimage -a Dissolve -v continuous -b build/bin/dissolve
-      ci/scripts/prep-appimage -a Dissolve-GUI -v continuous -b build/bin/dissolve-gui
-    displayName: 'Prepare AppDirs'
-  - bash: |
-      set -ex
+      wget https://raw.githubusercontent.com/disorderedmaterials/scripts/master/prep-appimage
+      chmod u+x ./prep-appimage
       echo -e "\nRetrieving linuxdeploy...\n"
       wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -O linuxdeploy.AppImage
       echo -e "\nRetrieving qt plugin for linuxdeploy...\n"
       wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
       chmod u+x ./linuxdeploy*.AppImage
+    displayName: 'Install Prerequisites'
+  - bash: |
+      set -ex
+      ./prep-appimage -a Dissolve -v continuous -b build/bin/dissolve
+      ./prep-appimage -a Dissolve-GUI -v continuous -b build/bin/dissolve-gui
+    displayName: 'Prepare AppDirs'
+  - bash: |
+
     displayName: 'Download linuxdeploy Tools'
   - bash: |
       set -ex
